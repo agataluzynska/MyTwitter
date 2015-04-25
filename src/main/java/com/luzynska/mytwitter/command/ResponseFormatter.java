@@ -22,27 +22,20 @@ public class ResponseFormatter {
 
 	public static String formatReadResponse(List<Message> messages) {
 		StringBuffer buffer = new StringBuffer();
-		for (Message message : messages) {
-			buffer.append(message.getMessage());
-			buffer.append(" ( ");
-			buffer.append(FORMATTER.format(message.getCreationDate()));
-			buffer.append(" )");
-			buffer.append(System.lineSeparator());
-		}
+		messages.stream().forEach(e -> buffer.append(e.getMessage()).append(" ( ")
+						.append(FORMATTER.format(e.getCreationDate()))
+						.append(" )").append(System.lineSeparator()));
 		return buffer.toString();
 	}
-	
+
 	public static String formatWallResponse(List<Message> messages) {
 		StringBuffer buffer = new StringBuffer();
-		for (Message message : messages) {
-			buffer.append(message.getOwner().getUserName());
-			buffer.append(" - ");
-			buffer.append(message.getMessage());
-			buffer.append(" ( ");
-			buffer.append(FORMATTER.format(message.getCreationDate()));
-			buffer.append(" )");
-			buffer.append(System.lineSeparator());
-		}
+		
+		messages.stream().forEach(e -> buffer.append(e.getOwner().getUserName())
+						.append(" - ").append(e.getMessage()).append(" ( ")
+						.append(FORMATTER.format(e.getCreationDate()))
+						.append(" )").append(System.lineSeparator()));
+
 		return buffer.toString();
 	}
 }

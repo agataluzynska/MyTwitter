@@ -50,9 +50,7 @@ public class Storage extends HashMap<String, User> {
 		}
 		List<Message> wall = read(userName);
 		
-		for (User user : me.getFollowees()) {
-			wall.addAll(user.getMessages());
-		}
+		me.getFollowees().stream().forEach(e -> wall.addAll(e.getMessages()));
 		
 		Collections.sort(wall);
 		return wall;
