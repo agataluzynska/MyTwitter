@@ -4,9 +4,11 @@ import com.luzynska.mytwitter.Storage;
 
 public class WallCommand implements Command {
 
+	public static final String REGEX = "^" + Command.NAME_REGEX + "\\s+wall$";
+	
 	@Override
 	public String getRegex() {
-		return "^" + Command.NAME_REGEX + "\\s+wall$";
+		return REGEX;
 	}
 
 	@Override

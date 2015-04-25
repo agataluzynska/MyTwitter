@@ -7,9 +7,11 @@ import com.luzynska.mytwitter.Storage;
 
 public class FollowCommand implements Command {
 
+	public static final String REGEX = "^" + Command.NAME_REGEX	+ "\\s+follows\\s+" + Command.NAME_REGEX + "$";
+	
 	@Override
 	public String getRegex() {
-		return "^" + Command.NAME_REGEX	+ "\\s+follows\\s+" + Command.NAME_REGEX + "$";
+		return REGEX;
 	}
 
 	@Override
