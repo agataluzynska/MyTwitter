@@ -4,11 +4,9 @@ import com.luzynska.mytwitter.Storage;
 
 public class ReadCommand implements Command {
 
-	public static final String REGEX = "^" + Command.NAME_REGEX + "$";
-	
 	@Override
 	public String getRegex() {
-		return REGEX;
+		return "^" + Command.NAME_REGEX + "$";
 	}
 
 	@Override

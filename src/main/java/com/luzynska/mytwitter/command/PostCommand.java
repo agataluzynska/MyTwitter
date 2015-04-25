@@ -6,12 +6,10 @@ import java.util.regex.Pattern;
 import com.luzynska.mytwitter.Storage;
 
 public class PostCommand implements Command {
-
-	public static final String REGEX = "^" + Command.NAME_REGEX + "\\s+->\\s+.+$";
 	
 	@Override
 	public String getRegex() {
-		return REGEX;
+		return "^" + Command.NAME_REGEX + "\\s+->\\s+.+$";
 	}
 
 	@Override
