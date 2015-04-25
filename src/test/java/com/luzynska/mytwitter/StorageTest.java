@@ -16,6 +16,11 @@ import com.luzynska.mytwitter.domain.User;
 
 public class StorageTest {
 
+	private final static String USERNAME = "user";
+	private final static String FOLLOWEE_NAME = "user2";
+	private final static String MESSAGE = "message";
+	private final static String MESSAGE_2 = "message2";
+	
 	private Storage storage;
 
 	@Before
@@ -31,119 +36,103 @@ public class StorageTest {
 	@Test
 	public void testAddMessageForNewUser() {
 		// GIVEN
-		String userName = "user";
 		assertTrue(storage.keySet().isEmpty());
 
 		// WHEN
-		storage.addMessage(userName, "message");
+		storage.addMessage(USERNAME, MESSAGE);
 
 		// THEN
-		assertNotNull(storage.get(userName));
+		assertNotNull(storage.get(USERNAME));
 	}
 
 	@Test
 	public void testAddMessageForExistingUser() {
 		// GIVEN
-		String userName = "user";
-		storage.addMessage(userName, "message");
-		User user = storage.get(userName);
+		User user = createUser(USERNAME);
 		assertNotNull(user);
 
 		// WHEN
-		storage.addMessage(userName, "message2");
+		storage.addMessage(USERNAME, MESSAGE_2);
 
 		// THEN
-		assertEquals("message", user.getMessages().get(0).getMessage());
-		assertEquals("message2", user.getMessages().get(1).getMessage());
+		assertEquals(MESSAGE, user.getMessages().get(0).getMessage());
+		assertEquals(MESSAGE_2, user.getMessages().get(1).getMessage());
 	}
 
 	@Test
 	public void testFollowSuccess() {
 		// GIVEN
-		String userName = "user";
-		storage.addMessage(userName, "message");
-		User user = storage.get(userName);
+		User user = createUser(USERNAME);
 		assertNotNull(user);
-
-		String followeeUserName = "user2";
-		storage.addMessage(followeeUserName, "message2");
-		User followee = storage.get(followeeUserName);
+		assertEquals(0, user.getFollowees().size());
+		
+		User followee = createUser(FOLLOWEE_NAME);
 		assertNotNull(followee);
-		assertEquals(0, storage.get(userName).getFollowees().size());
-		assertEquals(0, storage.get(followeeUserName).getFollowees().size());
+		assertEquals(0, followee.getFollowees().size());
 
 		// WHEN
-		storage.follow(userName, followeeUserName);
+		storage.follow(USERNAME, FOLLOWEE_NAME);
 
 		// THEN
-		assertEquals(1, storage.get(userName).getFollowees().size());
-		assertEquals(0, storage.get(followeeUserName).getFollowees().size());
+		assertEquals(1, user.getFollowees().size());
+		assertEquals(0, followee.getFollowees().size());
 	}
 
 	@Test
 	public void testFollowUserTwice() {
 		// GIVEN
-		String userName = "user";
-		storage.addMessage(userName, "message");
-		User user = storage.get(userName);
+		User user = createUser(USERNAME);
 		assertNotNull(user);
-
-		String followeeUserName = "user2";
-		storage.addMessage(followeeUserName, "message2");
-		User followee = storage.get(followeeUserName);
+		assertEquals(0, user.getFollowees().size());
+		
+		User followee = createUser(FOLLOWEE_NAME);
 		assertNotNull(followee);
-		assertEquals(0, storage.get(userName).getFollowees().size());
-		assertEquals(0, storage.get(followeeUserName).getFollowees().size());
+		assertEquals(0, followee.getFollowees().size());
 
 		// WHEN
-		storage.follow(userName, followeeUserName);
-		storage.follow(userName, followeeUserName);
+		storage.follow(USERNAME, FOLLOWEE_NAME);
+		storage.follow(USERNAME, FOLLOWEE_NAME);
 
 		// THEN
-		assertEquals(1, storage.get(userName).getFollowees().size());
-		assertEquals(0, storage.get(followeeUserName).getFollowees().size());
+		assertEquals(1, user.getFollowees().size());
+		assertEquals(0, followee.getFollowees().size());
 	}
 
 	@Test
 	public void testFollowYourself() {
 		// GIVEN
-		String userName = "user";
-		storage.addMessage(userName, "message");
-		User user = storage.get(userName);
-		assertNotNull(user);
-		assertEquals(0, storage.get(userName).getFollowees().size());
+		User user = createUser(USERNAME);
+		assertNotNull(user);	
+		assertEquals(0, storage.get(USERNAME).getFollowees().size());
 
 		// WHEN
-		storage.follow(userName, userName);
+		storage.follow(USERNAME, USERNAME);
 
 		// THEN
-		assertEquals(0, storage.get(userName).getFollowees().size());
+		assertEquals(0, user.getFollowees().size());
 	}
 
 	@Test
 	public void testFollowUnexistingUser() {
 		// GIVEN
-		String userName = "user";
-		storage.addMessage(userName, "message");
-		User user = storage.get(userName);
+		User user = createUser(USERNAME);
 		assertNotNull(user);
-		assertEquals(0, storage.get(userName).getFollowees().size());
+		assertEquals(0, user.getFollowees().size());
 
 		// WHEN
-		storage.follow(userName, "unexistingUser");
+		storage.follow(USERNAME, "unexistingUser");
 
 		// THEN
-		assertEquals(0, storage.get(userName).getFollowees().size());
+		assertEquals(0, user.getFollowees().size());
 	}
 
 	@Test
 	public void testReadUnexisitngUser() {
 		// GIVEN
-		String userName = "user";
 		assertTrue(storage.keySet().isEmpty());
 
 		// WHEN
-		List<Message> result = storage.read(userName);
+		List<Message> result = storage.read(USERNAME);
 
 		// THEN
 		assertTrue(result.isEmpty());
@@ -153,13 +142,12 @@ public class StorageTest {
 	@Test
 	public void testReadExisitngUser() {
 		// GIVEN
-		String userName = "user";
 		assertTrue(storage.keySet().isEmpty());
-		storage.addMessage(userName, "message");
-		assertNotNull(storage.get(userName));
+		User user = createUser(USERNAME);
+		assertNotNull(user);
 
 		// WHEN
-		List<Message> result = storage.read(userName);
+		List<Message> result = storage.read(USERNAME);
 
 		// THEN
 		assertEquals(1, result.size());
@@ -169,13 +157,12 @@ public class StorageTest {
 	@Test
 	public void testReadExisitngUserWithNullMessage() {
 		// GIVEN
-		String userName = "user";
 		assertTrue(storage.keySet().isEmpty());
-		storage.addMessage(userName, null);
-		assertNotNull(storage.get(userName));
+		storage.addMessage(USERNAME, null);
+		assertNotNull(storage.get(USERNAME));
 
 		// WHEN
-		List<Message> result = storage.read(userName);
+		List<Message> result = storage.read(USERNAME);
 
 		// THEN
 		assertEquals(1, result.size());
@@ -185,23 +172,26 @@ public class StorageTest {
 	@Test
 	public void testWallExisitngUser() {
 		// GIVEN
-		String userName = "user";
-		storage.addMessage(userName, "message");
-		User user = storage.get(userName);
+		User user = createUser(USERNAME);
 		assertNotNull(user);
 
-		String followeeUserName = "user2";
-		storage.addMessage(followeeUserName, "message2");
-		User followee = storage.get(followeeUserName);
+		User followee = createUser(FOLLOWEE_NAME);
 		assertNotNull(followee);
-		storage.follow(userName, followeeUserName);
-		assertTrue(storage.get(userName).getFollowees().size() == 1);
+		
+		storage.follow(USERNAME, FOLLOWEE_NAME);
+		assertTrue(user.getFollowees().size() == 1);
 
 		// WHEN
-		List<Message> result = storage.readWall(userName);
+		List<Message> result = storage.readWall(USERNAME);
 
 		// THEN
 		assertEquals(2, result.size());
 	}
-
+	
+	private User createUser(String userName) {
+		if (!storage.containsKey(userName)) {
+			storage.addMessage(userName, MESSAGE);
+		}
+		return storage.get(userName);
+	}
 }
