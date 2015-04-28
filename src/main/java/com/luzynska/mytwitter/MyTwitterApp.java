@@ -16,7 +16,6 @@ public class MyTwitterApp {
 			String line = bufferedReader.readLine().trim();
 			System.out.print(commandInterpreter.interpreteCommand(line));
 		}
-
 	}
 
 }
